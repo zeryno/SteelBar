@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>钢筋重量计算器</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        h2 {
+            color: #1a73e8;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .mode-selector {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .mode-selector label {
+            margin-right: 20px;
+            font-size: 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #e8f0fe;
+            color: #1a73e8;
+            font-weight: 600;
+        }
+        td {
+            color: #333;
+        }
+        input {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+        }
+        button {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 24px;
+            background-color: #1a73e8;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #1557b0;
+        }
+        #totalWeight, #recommendation {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a73e8;
+            margin-top: 20px;
+        }
+        .unit {
+            font-size: 12px;
+            color: #666;
+        }
+        .recommendation-box {
+            background-color: #e8f0fe;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>钢筋重量计算器</h2>
+    <div class="mode-selector">
+        <label><input type="radio" name="mode" value="weight" checked onchange="toggleMode()"> 计算重量</label>
+        <label><input type="radio" name="mode" value="pieces" onchange="toggleMode()"> 计算根数</label>
+    </div>
+    <table id="rebarTable">
+        <thead>
+            <tr>
+                <th>钢筋直径<br><span class="unit">(mm)</span></th>
+                <th>每米重量<br><span class="unit">(kg/m)</span></th>
+                <th>捆数<br><span class="unit">(每捆2吨)</span></th>
+                <th class="dynamic-header">根数<br><span class="unit">(PCS)</span></th>
+                <th>长度<br><span class="unit">(m)</span></th>
+                <th class="result-header">重量<br><span class="unit">(吨)</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>8</td>
+                <td>0.395</td>
+                <td><input type="number" min="0" value="0" class="bundle-input" onchange="calculate()"></td>
+                <td><input type="number" min="0" value="0" class="variable-input" onchange="calculate()"></td>
+                <td><input type="number" min="0" value="12" step="0.1" class="length-input" onchange="calculate()"></td>
+                <td class="result">0</td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td>0.617</td>
+                <td><input type="number" min="0" value="0" class="bundle-input" onchange="calculate()"></td>
+                <td><input type="number" min="0" value="0" class="variable-input" onchange="calculate()"></td>
+                <td><input type="number" min="0" value="12" step="0.1" class="length-input" onchange="calculate()"></td>
+                <td class="result">0</td>
+            </tr>
+            <tr>
+                <td>12</td>
+                <td>0.888</td>
+                <td><input type="number" min="0" value="0" class="bundle-input" onchange="calculate()"></td>
+                <td><input type="number" min="0" value="0" class="variable-input" onchange="calculate()"></td>
+                <td><input type="number" min="0" value="12" step="0.1" class="length-input" onchange="calculate()"></td>
+                <td class="result">0</td>
+            </tr>
+            <tr>
+                <td>16</td>
+                <td>1.578</td>
+                <td><input type="number" min="0" value="0" class="bundle-input" onchange="calculate()"></td>
+                <td><input type="number" min="0" value="0" class="variable-input" onchange="calculate()"></td>
+                <td><input type="number" min="0" value="12" step="0.1" class="length-input" onchange="calculate()"></td>
+                <td class="result">0</td>
+            </tr>
+            <tr>
+                <td>20</td>
+                <td>2.467</td>
+                <td><input type="number" min="0" value="0" class="bundle-input" onchange="calculate()"></td>
+                <td><input type="number" min="0" value="0" class="variable-input" onchange="calculate()"></td>
+                <td><input type="number" min="0" value="12" step="0.1" class="length-input" onchange="calculate()"></td>
+                <td class="result">0</td>
+            </tr>
+            <tr>
+                <td>25</td>
+                <td>3.853</td>
+                <td><input type="number" min="0" value="0" class="bundle-input" onchange="calculate()"></td>
+                <td><input type="number" min="0" value="0" class="variable-input" onchange="calculate()"></td>
+                <td><input type="number" min="0" value="12" step="0.1" class="length-input" onchange="calculate()"></td>
+                <td class="result">0</td>
+            </tr>
+        </tbody>
+    </table>
+    <button onclick="calculate()">计算</button>
+    <div id="totalWeight">总重量: 0 吨</div>
+    <div id="recommendation" class="recommendation-box"></div>
+
+    <script>
+        function toggleMode() {
+            const mode = document.querySelector('input[name="mode"]:checked').value;
+            const dynamicHeader = document.querySelector('.dynamic-header');
+            const resultHeader = document.querySelector('.result-header');
+            const variableInputs = document.querySelectorAll('.variable-input');
+            const recommendationBox = document.getElementById('recommendation');
+
+            if (mode === 'weight') {
+                dynamicHeader.innerHTML = '根数<br><span class="unit">(PCS)</span>';
+                resultHeader.innerHTML = '重量<br><span class="unit">(吨)</span>';
+                variableInputs.forEach(input => {
+                    input.type = 'number';
+                    input.step = '1';
+                    input.min = '0';
+                    input.value = '0';
+                });
+                recommendationBox.style.display = 'none';
+            } else {
+                dynamicHeader.innerHTML = '重量<br><span class="unit">(吨)</span>';
+                resultHeader.innerHTML = '根数<br><span class="unit">(PCS)</span>';
+                variableInputs.forEach(input => {
+                    input.type = 'number';
+                    input.step = '0.001';
+                    input.min = '0';
+                    input.value = '0';
+                });
+                recommendationBox.style.display = 'block';
+            }
+            calculate();
+        }
+
+        function calculate() {
+            const mode = document.querySelector('input[name="mode"]:checked').value;
+            const rows = document.querySelectorAll("#rebarTable tbody tr");
+            let totalWeight = 0;
+            let bestMatch = null;
+            let minDiff = Infinity;
+
+            rows.forEach(row => {
+                const diameter = parseFloat(row.cells[0].textContent); // 钢筋直径 (mm)
+                const unitWeight = parseFloat(row.cells[1].textContent); // 每米重量 (kg/m)
+                const bundles = parseInt(row.cells[2].querySelector(".bundle-input").value) || 0; // 捆数
+                const variableInput = row.cells[3].querySelector(".variable-input");
+                const length = parseFloat(row.cells[4].querySelector(".length-input").value) || 12; // 长度 (m)
+                let result;
+
+                if (mode === 'weight') {
+                    // 模式1：输入根数，计算重量
+                    const pieces = parseInt(variableInput.value) || 0; // 根数
+                    const bundleWeight = bundles * 2; // 每捆2吨
+                    const pieceWeight = (pieces * unitWeight * length) / 1000; // 散根重量 (吨)
+                    result = bundleWeight + pieceWeight;
+                    row.cells[5].textContent = result.toFixed(3); // 显示重量
+                    totalWeight += result;
+                } else {
+                    // 模式2：输入吨数，计算根数
+                    const inputWeight = parseFloat(variableInput.value) || 0; // 输入的散根重量 (吨)
+                    const bundleWeight = bundles * 2; // 每捆2吨
+                    const totalRowWeight = bundleWeight + inputWeight; // 总重量
+                    const pieces = Math.round((inputWeight * 1000) / (unitWeight * length)); // 计算根数，四舍五入
+                    result = pieces;
+                    row.cells[5].textContent = result; // 显示根数
+                    totalWeight += totalRowWeight;
+
+                    // 计算推荐结果：找出最接近输入重量的规格
+                    const actualWeight = (pieces * unitWeight * length) / 1000 + bundleWeight; // 实际总重量
+                    const weightDiff = Math.abs(totalRowWeight - actualWeight); // 重量偏差
+                    if (weightDiff < minDiff && totalRowWeight > 0) {
+                        minDiff = weightDiff;
+                        bestMatch = {
+                            diameter: diameter,
+                            pieces: pieces,
+                            bundles: bundles,
+                            length: length,
+                            actualWeight: actualWeight.toFixed(3)
+                        };
+                    }
+                }
+            });
+
+            document.getElementById('totalWeight').textContent = `总重量: ${totalWeight.toFixed(3)} 吨`;
+
+            // 显示推荐结果
+            const recommendationBox = document.getElementById('recommendation');
+            if (mode === 'pieces' && bestMatch) {
+                recommendationBox.innerHTML = `推荐规格: 直径 ${bestMatch.diameter}mm, ${bestMatch.bundles} 捆 + ${bestMatch.pieces} 根 (长度 ${bestMatch.length}m), 实际重量 ${bestMatch.actualWeight} 吨`;
+            } else {
+                recommendationBox.innerHTML = '';
+            }
+        }
+
+        // 初始化时运行一次计算
+        window.onload = function() {
+            toggleMode();
+        };
+    </script>
+</body>
+</html>
