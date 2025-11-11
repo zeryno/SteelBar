@@ -160,6 +160,14 @@
                 <td><input type="number" min="0" value="12" step="0.1" class="length-input" onchange="calculate()"></td>
                 <td class="result">0</td>
             </tr>
+            <tr>
+                <td>32</td>
+                <td>6.313</td>
+                <td><input type="number" min="0" value="0" class="bundle-input" onchange="calculate()"></td>
+                <td><input type="number" min="0" value="0" class="variable-input" onchange="calculate()"></td>
+                <td><input type="number" min="0" value="12" step="0.1" class="length-input" onchange="calculate()"></td>
+                <td class="result">0</td>
+            </tr>
         </tbody>
     </table>
     <button onclick="calculate()">计算</button>
@@ -206,34 +214,31 @@
             let minDiff = Infinity;
 
             rows.forEach(row => {
-                const diameter = parseFloat(row.cells[0].textContent); // 钢筋直径 (mm)
-                const unitWeight = parseFloat(row.cells[1].textContent); // 每米重量 (kg/m)
-                const bundles = parseInt(row.cells[2].querySelector(".bundle-input").value) || 0; // 捆数
+                const diameter = parseFloat(row.cells[0].textContent);
+                const unitWeight = parseFloat(row.cells[1].textContent);
+                const bundles = parseInt(row.cells[2].querySelector(".bundle-input").value) || 0;
                 const variableInput = row.cells[3].querySelector(".variable-input");
-                const length = parseFloat(row.cells[4].querySelector(".length-input").value) || 12; // 长度 (m)
+                const length = parseFloat(row.cells[4].querySelector(".length-input").value) || 12;
                 let result;
 
                 if (mode === 'weight') {
-                    // 模式1：输入根数，计算重量
-                    const pieces = parseInt(variableInput.value) || 0; // 根数
-                    const bundleWeight = bundles * 2; // 每捆2吨
-                    const pieceWeight = (pieces * unitWeight * length) / 1000; // 散根重量 (吨)
+                    const pieces = parseInt(variableInput.value) || 0;
+                    const bundleWeight = bundles * 2;
+                    const pieceWeight = (pieces * unitWeight * length) / 1000;
                     result = bundleWeight + pieceWeight;
-                    row.cells[5].textContent = result.toFixed(3); // 显示重量
+                    row.cells[5].textContent = result.toFixed(3);
                     totalWeight += result;
                 } else {
-                    // 模式2：输入吨数，计算根数
-                    const inputWeight = parseFloat(variableInput.value) || 0; // 输入的散根重量 (吨)
-                    const bundleWeight = bundles * 2; // 每捆2吨
-                    const totalRowWeight = bundleWeight + inputWeight; // 总重量
-                    const pieces = Math.round((inputWeight * 1000) / (unitWeight * length)); // 计算根数，四舍五入
+                    const inputWeight = parseFloat(variableInput.value) || 0;
+                    const bundleWeight = bundles * 2;
+                    const totalRowWeight = bundleWeight + inputWeight;
+                    const pieces = Math.round((inputWeight * 1000) / (unitWeight * length));
                     result = pieces;
-                    row.cells[5].textContent = result; // 显示根数
+                    row.cells[5].textContent = result;
                     totalWeight += totalRowWeight;
 
-                    // 计算推荐结果：找出最接近输入重量的规格
-                    const actualWeight = (pieces * unitWeight * length) / 1000 + bundleWeight; // 实际总重量
-                    const weightDiff = Math.abs(totalRowWeight - actualWeight); // 重量偏差
+                    const actualWeight = (pieces * unitWeight * length) / 1000 + bundleWeight;
+                    const weightDiff = Math.abs(totalRowWeight - actualWeight);
                     if (weightDiff < minDiff && totalRowWeight > 0) {
                         minDiff = weightDiff;
                         bestMatch = {
@@ -249,7 +254,6 @@
 
             document.getElementById('totalWeight').textContent = `总重量: ${totalWeight.toFixed(3)} 吨`;
 
-            // 显示推荐结果
             const recommendationBox = document.getElementById('recommendation');
             if (mode === 'pieces' && bestMatch) {
                 recommendationBox.innerHTML = `推荐规格: 直径 ${bestMatch.diameter}mm, ${bestMatch.bundles} 捆 + ${bestMatch.pieces} 根 (长度 ${bestMatch.length}m), 实际重量 ${bestMatch.actualWeight} 吨`;
@@ -258,7 +262,6 @@
             }
         }
 
-        // 初始化时运行一次计算
         window.onload = function() {
             toggleMode();
         };
